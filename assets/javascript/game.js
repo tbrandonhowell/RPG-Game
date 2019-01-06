@@ -20,12 +20,14 @@
 // create objects for each character
 
 var char0 = {
-    name: 'Obi-Wan',
+    name: 'Predator',
     hp: 120,
+    liveHP: 120,
     ap: 8,
     liveAP: 8,
     cp: 8,
-    state: 0
+    state: 0,
+    pic: "assets/images/predator.png"
     // character states will be:
     // 0 = new round
     // 1 = character
@@ -35,30 +37,36 @@ var char0 = {
 };
 
 var char1 = {
-    name: 'Luke Skywalker',
+    name: 'Dutch',
     hp: 100,
+    liveHP: 100,
     ap: 5,
     liveAP: 5,
     cp: 5,
-    state: 0
+    state: 0,
+    pic: "assets/images/dutch.jpg"
 };
 
 var char2 = {
-    name: 'Darth Sidious',
+    name: 'Berserker Predator',
     hp: 150,
+    liveHP: 150,
     ap: 20,
     liveAP: 20,
     cp: 20,
-    state: 0
+    state: 0,
+    pic: "assets/images/berserker.jpg"
 };
 
 var char3 = {
-    name: 'Darth Maul',
+    name: 'Predalien',
     hp: 180,
+    liveHP: 180,
     ap: 25,
     liveAP: 25,
     cp: 25,
-    state: 0
+    state: 0,
+    pic: "assets/images/predalien.jpg"
 };
 
 // create an array with those characters
@@ -71,8 +79,42 @@ var gameState = 0; // to watch our state for user control monitoring and game fl
 var character; // indicator for our character
 var attackPoints; // the increasing AP for our character
 var opponent; // indicator for the current opponent
+var stillPlaying; // will use every time we check to see if we've defeated all our enemies
 
 // ^^^ MAY NOT NEED THE CHARACTER AND OPPONENT VARIABLES?
+
+// CREATE THE resetGame FUNCTION:
+
+function resetGame() {
+    
+    // reset core variables
+    gameState = 0;
+    character;
+    attackPoints;
+    opponent;
+    stillPlaying;
+
+    // reset character states and liveAP
+
+    for (i=0;i<charArray.length;i++) {
+        charArray[i].state = 0; // set all characters to state 0
+        charArray[i].liveAP = charArray[i].ap; // set all character's liveAP back to their regular ap
+        charArray[i].liveHP = charArray[i].hp; // set all character's liveHP back to their regular HP
+    }
+
+    // hide dialogue divs
+    $("#attack").attr("style", "display: none");
+    $("#attackInfo").attr("style", "display: none");
+    $("#loseInfo").attr("style", "display: none");
+    $("#battleWinInfo").attr("style", "display: none");
+    $("#warWinInfo").attr("style", "display: none");
+
+    // put the 'select your character' text
+    $(".state0").attr("style", "display: block");
+
+    updateScreen();
+
+};
 
 // CREATE THE updateScreen FUNCTION: 
 
@@ -89,52 +131,103 @@ function updateScreen () {
  
         if (charArray[i].state === 0) { // for any characters w/ 0 state, build them into selectChar div
             var manipulateDiv = $("#selectChar") // jquery - syncing the contents of the selectChar element to the manipulateDiv variable
-            var insertDiv = $("<button>");
+            // create the new character div
+            var insertDiv = $("<div>"); 
             insertDiv.attr("id", "char" + i);
             insertDiv.attr("class", "charButton");
             insertDiv.attr("char", i);
-            var insert = charArray[i].name + " // " + charArray[i].hp + " // " + charArray[i].state;
-            insertDiv.text(insert);
+            // create the name <p> in the character div
+            var insertP = $("<p>");
+            insertP.text(charArray[i].name);
+            insertDiv.append(insertP);
+            // create the image in the character div
+            var insertImg = $("<img>");
+            insertImg.attr("src", charArray[i].pic);
+            insertDiv.append(insertImg);
+            // create the HP <p> in the character div
+            var insertP = $("<p>");
+            insertP.text(charArray[i].liveHP);
+            insertDiv.append(insertP);
+            // insert the character div into #selectChar
             manipulateDiv.append(insertDiv);
             //console.log(insertDiv);
         }
         
         if (charArray[i].state === 1) { // for any characters w/ 1 state, build them into yourChar div
             var manipulateDiv = $("#yourChar") // jquery - syncing the contents of the selectChar element to the manipulateDiv variable
-            var insertDiv = $("<button>");
+            // create the new character div
+            var insertDiv = $("<div>"); 
             insertDiv.attr("id", "char" + i);
             insertDiv.attr("class", "charButton");
             insertDiv.attr("char", i);
-            var insert = charArray[i].name + " // " + charArray[i].hp + " // " + charArray[i].state;
-            insertDiv.text(insert);
+            // create the name <p> in the character div
+            var insertP = $("<p>");
+            insertP.text(charArray[i].name);
+            insertDiv.append(insertP);
+            // create the image in the character div
+            var insertImg = $("<img>");
+            insertImg.attr("src", charArray[i].pic);
+            insertDiv.append(insertImg);
+            // create the HP <p> in the character div
+            var insertP = $("<p>");
+            insertP.text(charArray[i].liveHP);
+            insertDiv.append(insertP);
+            // insert the character div into #selectChar
             manipulateDiv.append(insertDiv);
             //console.log(insertDiv);
         } 
 
         if (charArray[i].state === 2) { // for any characters w/ 2 state, build them into availEnemies div
             var manipulateDiv = $("#availEnemies") // jquery - syncing the contents of the selectChar element to the manipulateDiv variable
-            var insertDiv = $("<button>");
+            // create the new character div
+            var insertDiv = $("<div>"); 
             insertDiv.attr("id", "char" + i);
             insertDiv.attr("class", "charButton");
             insertDiv.attr("char", i);
-            var insert = charArray[i].name + " // " + charArray[i].hp + " // " + charArray[i].state;
-            insertDiv.text(insert);
+            // create the name <p> in the character div
+            var insertP = $("<p>");
+            insertP.text(charArray[i].name);
+            insertDiv.append(insertP);
+            // create the image in the character div
+            var insertImg = $("<img>");
+            insertImg.attr("src", charArray[i].pic);
+            insertDiv.append(insertImg);
+            // create the HP <p> in the character div
+            var insertP = $("<p>");
+            insertP.text(charArray[i].liveHP);
+            insertDiv.append(insertP);
+            // insert the character div into #selectChar
             manipulateDiv.append(insertDiv);
             //console.log(insertDiv);
         } 
         
         if (charArray[i].state === 3) { // for any characters w/ 3 state, build them into opponent div
             var manipulateDiv = $("#defender") // jquery - syncing the contents of the selectChar element to the manipulateDiv variable
-            var insertDiv = $("<button>");
+            // create the new character div
+            var insertDiv = $("<div>"); 
             insertDiv.attr("id", "char" + i);
             insertDiv.attr("class", "charButton");
             insertDiv.attr("char", i);
-            var insert = charArray[i].name + " // " + charArray[i].hp + " // " + charArray[i].state;
-            insertDiv.text(insert);
+            // create the name <p> in the character div
+            var insertP = $("<p>");
+            insertP.text(charArray[i].name);
+            insertDiv.append(insertP);
+            // create the image in the character div
+            var insertImg = $("<img>");
+            insertImg.attr("src", charArray[i].pic);
+            insertDiv.append(insertImg);
+            // create the HP <p> in the character div
+            var insertP = $("<p>");
+            insertP.text(charArray[i].liveHP);
+            insertDiv.append(insertP);
+            // insert the character div into #selectChar
             manipulateDiv.append(insertDiv);
-            // console.log(insertDiv);
+            //console.log(insertDiv);
         } 
-
+        // get rid of the "Select Your Character" text if past state 0
+        if (gameState !== 0) {
+            $(".state0").attr("style", "display: none");
+        }
         // display the attack button if we're in gameState 2:
         if (gameState == "2") {
             $("#attack").attr("style", "display: block");
@@ -231,35 +324,51 @@ $(document).on("click", "#attack", function() { // watch for the click on attack
     console.log("Attack!");
 
     if (gameState == "2") { // confirm we're in stage 2 - opponent selected aka active round - user action: fight
-        // subtract my liveAP from opponent hp
-        charArray[opponent].hp = charArray[opponent].hp - charArray[character].liveAP;
-        console.log("Opponent HP: " + charArray[opponent].hp);
-        // subtract opponent ap from my hp
-        charArray[character].hp = charArray[character].hp - charArray[opponent].ap;
-        console.log("Character HP: " + charArray[character].hp);
+        // subtract my liveAP from opponent liveHP
+        charArray[opponent].liveHP = charArray[opponent].liveHP - charArray[character].liveAP;
+        console.log("Opponent HP: " + charArray[opponent].liveHP);
+        // subtract opponent ap from my liveHP
+        charArray[character].liveHP = charArray[character].liveHP - charArray[opponent].ap;
+        console.log("Character HP: " + charArray[character].liveHP);
         // check for win or loss for the round
-        if (charArray[character].hp < 1) { // you've lost the battle (and the game)
+        if (charArray[character].liveHP < 1) { // you've lost the battle (and the game)
             console.log("YOU LOST");
             $("#loseInfo").attr("style", "display: block"); // hide on-screen attack info
             $("#attackInfo").attr("style", "display: none"); // hide on-screen attack info
             $("#attack").attr("style", "display: none");
             gameState = "3a";
-        } else if (charArray[opponent].hp < 1) { // you've won the battle
+        } else if (charArray[opponent].liveHP < 1) { // you've won the battle
+            charArray[opponent].state = 4;// set opponent state to defeated
             console.log("YOU WON THE BATTLE");
+            // need to figure out if we've defeated everyone:
+            stillPlaying = false; // reset stillPlaying
+            console.log("stillPlaying: " + stillPlaying)
+            for (i=0;i<charArray.length;i++) { // loop through character array and look for any players that are still a state 2
+                if (charArray[i].state == 2) {
+                    stillPlaying = true; // set stillPlaying to true b/c there are still characters to fight
+                }
+            };
+            console.log("checked array, stillPlaying: " + stillPlaying)
             // did you win the war?
-            // if () { // if you won the war
-                
-            // }
-            // if () { // if you won the battle
+            if (stillPlaying == false) { // if you won the war
+                console.log("war win logic is triggering")
+                $("#attackInfo").attr("style", "display: none"); // hide on-screen attack info
+                $("#attack").attr("style", "display: none"); // hide on-screen attack info
+                $("#warWinInfo").attr("style", "display: block"); // display on-screen war win info
+                $("#defender").empty(); // clear the last defender out
+            } else { // do this because you've only won the battle:
                 $("#attackInfo").attr("style", "display: none"); // hide on-screen attack info
                 $("#attack").attr("style", "display: none"); // hide on-screen attack info
                 $("#defender").empty(); // remove the opponent from the defender div
                 $(".opponentName").text(charArray[opponent].name);
                 $("#battleWinInfo").attr("style", "display: block"); // display on-screen battle win info
-                charArray[opponent].state = 4;// set opponent state to defeated
                 gameState = "1";
-            // }
-        } else { // do nothing but update the screen
+                // increment my character's liveAP after every attack:
+                charArray[character].liveAP = charArray[character].liveAP + charArray[character].ap;
+                console.log("Your liveAP: " + charArray[character].liveAP)      
+                updateScreen();
+            }
+        } else { // do nothing but update the screen because no win/loss happened
             console.log("WE'RE JUST UPDATING THE SCREEN");
             $(".opponentName").text(charArray[opponent].name);
             $(".yourAttack").text(charArray[character].liveAP);
@@ -275,4 +384,6 @@ $(document).on("click", "#attack", function() { // watch for the click on attack
 });
 
 
-
+$(document).on("click", "#restart", function() { // watch for the click on reset button
+    resetGame();
+});
