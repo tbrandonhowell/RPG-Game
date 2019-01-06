@@ -23,6 +23,7 @@ var char0 = {
     name: 'Obi-Wan',
     hp: 120,
     ap: 8,
+    liveAP: 8,
     cp: 8,
     state: 0
     // character states will be:
@@ -37,6 +38,7 @@ var char1 = {
     name: 'Luke Skywalker',
     hp: 100,
     ap: 5,
+    liveAP: 5,
     cp: 5,
     state: 0
 };
@@ -45,6 +47,7 @@ var char2 = {
     name: 'Darth Sidious',
     hp: 150,
     ap: 20,
+    liveAP: 20,
     cp: 20,
     state: 0
 };
@@ -53,6 +56,7 @@ var char3 = {
     name: 'Darth Maul',
     hp: 180,
     ap: 25,
+    liveAP: 25,
     cp: 25,
     state: 0
 };
@@ -170,6 +174,8 @@ $(document).on("click", ".charButton", function() { // watch for the click
             }
         }
 
+        character = arrayIndex // set the 'character' variable for use in the attack
+
         gameState = "1"; // update the game state
 
         updateScreen();
@@ -182,7 +188,11 @@ $(document).on("click", ".charButton", function() { // watch for the click
     
     if (gameState == "1" && charState == 2) { // confirmed a character has been selected (gameState = 1) && confirming that an "available opponent" character was clicked
 
+        $("#battleWinInfo").attr("style", "display: none"); // hide the "battle won" info in case we're coming back into gameState 2 from a win    
+    
         charArray[arrayIndex].state = 3; // update state of selected character
+
+        opponent = arrayIndex // set the 'opponent' variable to use in the attach
 
         gameState = "2"; // update the game state
 
@@ -216,19 +226,53 @@ $(document).on("click", ".charButton", function() { // watch for the click
 });
 
 
-$(document).on("click", "#attack", function() { // watch for the click
+$(document).on("click", "#attack", function() { // watch for the click on attack button
 
     console.log("Attack!");
 
     if (gameState == "2") { // confirm we're in stage 2 - opponent selected aka active round - user action: fight
-        // subtract my ap from opponent hp
+        // subtract my liveAP from opponent hp
+        charArray[opponent].hp = charArray[opponent].hp - charArray[character].liveAP;
+        console.log("Opponent HP: " + charArray[opponent].hp);
         // subtract opponent ap from my hp
+        charArray[character].hp = charArray[character].hp - charArray[opponent].ap;
+        console.log("Character HP: " + charArray[character].hp);
         // check for win or loss for the round
-        // if win, execute logic
-        // if loss, execute logic
-        // if neither, increase my ap
+        if (charArray[character].hp < 1) { // you've lost the battle (and the game)
+            console.log("YOU LOST");
+            $("#loseInfo").attr("style", "display: block"); // hide on-screen attack info
+            $("#attackInfo").attr("style", "display: none"); // hide on-screen attack info
+            $("#attack").attr("style", "display: none");
+            gameState = "3a";
+        } else if (charArray[opponent].hp < 1) { // you've won the battle
+            console.log("YOU WON THE BATTLE");
+            // did you win the war?
+            // if () { // if you won the war
+                
+            // }
+            // if () { // if you won the battle
+                $("#attackInfo").attr("style", "display: none"); // hide on-screen attack info
+                $("#attack").attr("style", "display: none"); // hide on-screen attack info
+                $("#defender").empty(); // remove the opponent from the defender div
+                $(".opponentName").text(charArray[opponent].name);
+                $("#battleWinInfo").attr("style", "display: block"); // display on-screen battle win info
+                charArray[opponent].state = 4;// set opponent state to defeated
+                gameState = "1";
+            // }
+        } else { // do nothing but update the screen
+            console.log("WE'RE JUST UPDATING THE SCREEN");
+            $(".opponentName").text(charArray[opponent].name);
+            $(".yourAttack").text(charArray[character].liveAP);
+            $(".theirAttack").text(charArray[opponent].ap);
+            $("#attackInfo").attr("style", "display: block");
+            updateScreen();
+            // increment my character's liveAP after every attack:
+            charArray[character].liveAP = charArray[character].liveAP + charArray[character].ap;
+            console.log("Your liveAP: " + charArray[character].liveAP)            
+        }
     } 
 
 });
+
 
 

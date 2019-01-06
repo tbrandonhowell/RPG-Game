@@ -26,6 +26,25 @@
 
         <button type="button" id="attack" style="display: none">Attack!</button>
 
+        <div id="attackInfo" style="display:none">
+            <p>You attacked <span class="opponentName"></span> for <span class="yourAttack"></span> damage.</p>
+            <p><span class="opponentName"></span> attacked you back for <span class="theirAttack"></span> damage.</p>
+        </div>
+
+        <div id="loseInfo" style="display:none">
+            <p>You've been defeated.....GAME OVER!</p>
+            <button type="button" id="restart">Restart</button>
+        </div>
+
+        <div id="battleWinInfo" style="display:none">
+            <p>You have defeated <span class="opponentName"></span>, you can chose to fight another enemy.</p>
+        </div>
+
+        <div id="warWinInfo" style="display:none">
+            <p>YOU WON!!!! GAME OVER!!!!</p>
+            <button type="button" id="restart">Restart</button>
+            </div>
+
         <script src="assets/javascript/game.js"></script>
     </body>
 </html>
