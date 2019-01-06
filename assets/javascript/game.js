@@ -25,7 +25,12 @@ var char0 = {
     ap: 8,
     cp: 8,
     state: 0
-    // character states will be 0 = untouched, 1 = character, 2 = opponent
+    // character states will be:
+    // 0 = new round
+    // 1 = character
+    // 2 = available opponent
+    // 3 = selected opponent
+    // 4 = defeated
 };
 
 var char1 = {
@@ -56,22 +61,174 @@ var char3 = {
 
 var charArray = [char0,char1,char2,char3]
 
-console.log(charArray);
-
 // initialize variables needed for the game
 
 var gameState = 0; // to watch our state for user control monitoring and game flow
+var character; // indicator for our character
 var attackPoints; // the increasing AP for our character
 var opponent; // indicator for the current opponent
 
-// fill the selectChar div to start the game
+// ^^^ MAY NOT NEED THE CHARACTER AND OPPONENT VARIABLES?
 
-for (var i = 0; i < charArray.length; i++) {
-    var insert = charArray[i].name + " // " + charArray[i].hp + " // " + charArray[i].state;
-    console.log(insert);
-}
+// CREATE THE updateScreen FUNCTION: 
 
-// set the game state << not needed b/c already set when we initialized the variable
+function updateScreen () {
 
+    $("#selectChar").empty(); // need a line to clear the divs before we rebuild them!
+    $("#yourChar").empty(); // need a line to clear the divs before we rebuild them!
+    $("#availEnemies").empty(); // need a line to clear the divs before we rebuild them!
+    $("#defender").empty(); // need a line to clear the divs before we rebuild them!
+
+    for (var i = 0; i < charArray.length; i++) { // loop through the characters array
+
+        // THE STUFF BELOW SHOULD BE TURNED INTO A NESTED FUNCTION SO I'M NOT REPEATING MYSELF SO MUCH
+ 
+        if (charArray[i].state === 0) { // for any characters w/ 0 state, build them into selectChar div
+            var manipulateDiv = $("#selectChar") // jquery - syncing the contents of the selectChar element to the manipulateDiv variable
+            var insertDiv = $("<button>");
+            insertDiv.attr("id", "char" + i);
+            insertDiv.attr("class", "charButton");
+            insertDiv.attr("char", i);
+            var insert = charArray[i].name + " // " + charArray[i].hp + " // " + charArray[i].state;
+            insertDiv.text(insert);
+            manipulateDiv.append(insertDiv);
+            //console.log(insertDiv);
+        }
+        
+        if (charArray[i].state === 1) { // for any characters w/ 1 state, build them into yourChar div
+            var manipulateDiv = $("#yourChar") // jquery - syncing the contents of the selectChar element to the manipulateDiv variable
+            var insertDiv = $("<button>");
+            insertDiv.attr("id", "char" + i);
+            insertDiv.attr("class", "charButton");
+            insertDiv.attr("char", i);
+            var insert = charArray[i].name + " // " + charArray[i].hp + " // " + charArray[i].state;
+            insertDiv.text(insert);
+            manipulateDiv.append(insertDiv);
+            //console.log(insertDiv);
+        } 
+
+        if (charArray[i].state === 2) { // for any characters w/ 2 state, build them into availEnemies div
+            var manipulateDiv = $("#availEnemies") // jquery - syncing the contents of the selectChar element to the manipulateDiv variable
+            var insertDiv = $("<button>");
+            insertDiv.attr("id", "char" + i);
+            insertDiv.attr("class", "charButton");
+            insertDiv.attr("char", i);
+            var insert = charArray[i].name + " // " + charArray[i].hp + " // " + charArray[i].state;
+            insertDiv.text(insert);
+            manipulateDiv.append(insertDiv);
+            //console.log(insertDiv);
+        } 
+        
+        if (charArray[i].state === 3) { // for any characters w/ 3 state, build them into opponent div
+            var manipulateDiv = $("#defender") // jquery - syncing the contents of the selectChar element to the manipulateDiv variable
+            var insertDiv = $("<button>");
+            insertDiv.attr("id", "char" + i);
+            insertDiv.attr("class", "charButton");
+            insertDiv.attr("char", i);
+            var insert = charArray[i].name + " // " + charArray[i].hp + " // " + charArray[i].state;
+            insertDiv.text(insert);
+            manipulateDiv.append(insertDiv);
+            // console.log(insertDiv);
+        } 
+
+        // display the attack button if we're in gameState 2:
+        if (gameState == "2") {
+            $("#attack").attr("style", "display: block");
+        } else {
+            $("#attack").attr("style", "display: none");
+        }
+        
+    }
+} // CLOSE updateScreen()
+
+updateScreen(); // run function once to create the game
+
+
+// CHARACTER CLICKS + GAMESTATES
+
+$(document).on("click", ".charButton", function() { // watch for the click
+// ^^ had to use this different "document" method to get this to work. based on: https://www.tutorialrepublic.com/faq/how-to-bind-click-event-to-dynamically-added-elements-in-jquery.php
+// the click events weren't binding to the new buttons that were added to the DOM without this change
+// previously had $(".charButton").on("click", function() {....})
+// it would work on the first click but not the second due to the binding issue
+
+    console.log("click");
+    console.log("gameState: " + gameState);
+
+    var arrayIndex = $(this).attr("char"); // access the array index for the clicked button
+    console.log("arrayIndex: " + arrayIndex);
+    var charState = charArray[arrayIndex].state; // get the character state for that array index
+    console.log("current charState: " + charState);
+
+    if (gameState == "0" && charState == 0) { // fresh start to game && confirming that an 'untouched' character was clicked
+    
+        charArray[arrayIndex].state = 1; // update state of selected character
+
+        for (i=0; i<charArray.length; i++) { // loop through the character array
+            if (charArray[i].state !== 1) { // push all other character states to 2
+                charArray[i].state = 2;
+            }
+        }
+
+        gameState = "1"; // update the game state
+
+        updateScreen();
+
+        console.log("gameState: " + gameState);
+
+        console.log(charArray);
+
+    } 
+    
+    if (gameState == "1" && charState == 2) { // confirmed a character has been selected (gameState = 1) && confirming that an "available opponent" character was clicked
+
+        charArray[arrayIndex].state = 3; // update state of selected character
+
+        gameState = "2"; // update the game state
+
+        updateScreen();
+
+        console.log("gameState: " + gameState);
+
+        console.log(charArray);
+
+    };
+
+    // gameState 2 should actually only allow the "attack" button!!! MOVE TO DIFFERENT CLICK EVENT
+    // actually everything below should be a different click event!
+    
+    // if (gameState == "3a") { // 3a - you lost the round/game - user action: reset the game
+    //     // nothing should happen with character clicks in this state
+    // } 
+    
+    // if (gameState == "3b") { // 3b - you won the round - logic needed: did you win the game, or did you win the round?
+    //     // nothing should happen with character clicks in this state
+    // } 
+    
+    // if (gameState == "3b0") { // 3b0 - you won the game - user action: reset the game
+    //     // nothing should happen with character clicks in this state
+    // } 
+    
+    // if (gameState == "3b1") { // 3b1 - you won the round - logic: put user back in state 1
+    //     // nothing should happen with character clicks in this state
+    // } 
+
+});
+
+
+$(document).on("click", "#attack", function() { // watch for the click
+
+    console.log("Attack!");
+
+    if (gameState == "2") { // confirm we're in stage 2 - opponent selected aka active round - user action: fight
+        // subtract my ap from opponent hp
+        // subtract opponent ap from my hp
+        // check for win or loss for the round
+        // if win, execute logic
+        // if loss, execute logic
+        // if neither, increase my ap
+    } 
+
+});
 
 
